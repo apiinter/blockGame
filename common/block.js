@@ -13,7 +13,7 @@ var myGameArea = { // 필요한 모든 속성을 집어넣음
     message : {
         docIsReady : "문서가 준비되었습니다"
     },
-    key: false,
+    keys: [],
     
     start : function(){   
         this.canvas.width = 480;
@@ -30,10 +30,13 @@ var myGameArea = { // 필요한 모든 속성을 집어넣음
         this.btns[3].addEventListener("mousedown", moveDown);
         this.btns[3].addEventListener("mouseup", moveStop);
         window.addEventListener("keydown", function(e){
-            myGameArea.key = e.keyCode;
+            // myGameArea에 keys 배열이 없으면 새로 만들고 
+            myGameArea.keys = (myGameArea.keys || []);
+            myGameArea.keys[e.keyCode] = (e.type == "keydown"); // e.type == "keydown"의 boolean값을 대입
         })
         window.addEventListener("keyup", function(e){
-            myGameArea.key = false;
+            myGameArea.keys[e.keyCode] = (e.type == "keydown");
+            moveStop();
         })
     },
     clear : function(){
@@ -79,13 +82,12 @@ function moveStop(){
 
 // 화면 제어를 위한 함수
 function updateGameArea(){
-    var mGAkey = myGameArea.key;
+    var mGAkeys = myGameArea.keys;
     myGameArea.clear();   // myGameArea.clear()를 호출하여 그림을 그리기 전에 계속 지움
-    if(mGAkey && mGAkey === 37) myGamePiece.speedX = -1
-    if(mGAkey && mGAkey === 39) myGamePiece.speedX = 1
-    if(mGAkey && mGAkey === 38) myGamePiece.speedY = -1
-    if(mGAkey && mGAkey === 40) myGamePiece.speedY = 1
-    if(!mGAkey) moveStop();
+    if(mGAkeys && mGAkeys[37]) myGamePiece.speedX = -16
+    if(mGAkeys && mGAkeys[39]) myGamePiece.speedX = 16
+    if(mGAkeys && mGAkeys[38]) myGamePiece.speedY = -16
+    if(mGAkeys && mGAkeys[40]) myGamePiece.speedY = 16
     myGamePiece.newPos();
     myGamePiece.update();   // Component의 객체를 다시 그림
 }
